@@ -1,0 +1,47 @@
+{
+    "settings" : {
+        "number_of_shards":2,
+        "number_of_replicas": 1,
+        "analysis": {
+            "analyzer": {
+              "analyzer_book_params": {
+                "tokenizer": "tokenizer_book_params"
+              }
+            },
+            "tokenizer": {
+              "tokenizer_book_params": {
+                "type": "ngram",
+                "min_gram": 3,
+                "max_gram": 3,
+                "token_chars": [
+                  "letter",
+                  "digit"
+                ]
+              }
+            }
+          }
+    },
+
+    "mappings": {
+            "properties": {
+                "name":{
+                    "analyzer": "analyzer_book_params",
+                    "type": "text"
+                },
+                "author":{
+                    "analyzer": "analyzer_book_params",
+                    "type": "text"
+                },
+                "genres":{
+                    "analyzer": "analyzer_book_params",
+                    "type": "text"
+                },
+                "typo":{
+                    "type":"integer"
+                },
+                "age":{
+                    "type":"integer"
+                }
+            }
+            }
+            }
