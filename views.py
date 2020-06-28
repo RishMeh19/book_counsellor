@@ -27,7 +27,7 @@ def webhook(request):
                   webhook_event = entry['messaging'][0]
                   sender_psid = webhook_event['sender']['id']
                   if r.exists(sender_psid) and int(r.hget(sender_psid,'processing')):
-                      callSendAPI(sender_psid, {"text" : 'Wait while we process'})
+                    callSendAPI(sender_psid, {"text" : 'Wait while we process'})
                   if webhook_event.get('optin'):
                     handle_quick_reply_postback(sender_psid, webhook_event['optin'])
                   elif webhook_event.get('message'):
@@ -54,11 +54,11 @@ def webhook(request):
   except Exception as e:
     print(str(e))
     traceback.print_exc(file=sys.stdout)
-    if r.exists(sender_psid):
-      r.delete(sender_psid)
     if sender_psid:
       callSendAPI(sender_psid, {"text": "Sorry, Can't serve you at present, will try our best to serve you soon and suggest you your perfect book-match"})
-    return HttpResponseNotFound(status = 404)
+    if r.exists(sender_psid):
+      r.delete(sender_psid)
+    return HttpResponse(status = 200)
 
 
 def handle_message(sender_psid, received_message, storage=True):
@@ -134,10 +134,12 @@ def handle_message(sender_psid, received_message, storage=True):
 
 
 def handle_quick_reply_postback(sender_psid, received_postback):
-  if not r.exists(sender_psid, 'last_rep'):
+  try:
+    last_rep = int(r.hget(sender_psid,'last_rep'))
+  except:
+    r.delete(sender_psid)
     handle_message(sender_psid, {})
     return
-  last_rep = int(r.hget(sender_psid,'last_rep'))
   payload = received_postback.get('payload')
   if payload == 'yes':
     if last_rep in [3,5,7]:

@@ -52,6 +52,7 @@ def fetch_params(sender_psid):
             else:
                 dic['age'] = 5
     if author:
+        author = author.decode('utf-8')
         if author != 'no':
             dic['author'] = author.lower()
     return dic
@@ -116,7 +117,6 @@ def index_book(dic):
                 notify_dic[not_token].append({'name': i.get('name'), 'author': i.get('author')})
             else:
                 notify_dic[not_token] = [{'name': i.get('name'), 'author': i.get('author'), 'genre': i.get('genres')}]
-    print (notify_dic)
     for s in notify_query_set:
         es.delete(index = 'requests-index', id = s)
     send_notification(notify_dic)
